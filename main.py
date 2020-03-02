@@ -5,15 +5,21 @@ import pdfminer
 from pdfminer import high_level
 import re
 from datetime import date
+import telegram         #pip install python-telegram-bot
 
 
-url = "https://www.poliziadistato.it/statics/09/emilia.pdf"
+#url = "https://www.poliziadistato.it/statics/09/emilia.pdf"
+url = "https://www.poliziadistato.it/statics/21/emilia.pdf"
 download_location = str(pathlib.Path().absolute()) + "/"+"emilia.pdf"
 
 # Lista dei dati da inviare per email
 data = []
 # Indici dell'inizio dei giorni in data
 idx_date_data = []
+# Istanza di un bot telegram
+bot = telegram.Bot(token='1043680925:AAE7Aw-sPROkm1e98eC9uABeTKjpengI_Ks')
+#Lista di id chat a cui inviare i messaggi
+Lista_chat = [220000708,415720988]
 
 def pdf_fetch():
     """
@@ -113,6 +119,8 @@ def send_alert():
         :return: none
         """
     print("---IT'S ALERT TIME---")
+    for id in Lista_chat:
+        bot.send_message(id, "---IT'S ALERT TIME---")
     idx_controllo = -1
     for indice in idx_date_data:
         if data[indice] == date.today().strftime("%d/%m/%Y"):
@@ -124,6 +132,8 @@ def send_alert():
     # Stampa i controlli di oggi (da inviare via mail)
     while True:
         print(data[idx_controllo])
+        for id in Lista_chat:
+            bot.send_message(id, data[idx_controllo])
         idx_controllo += 1
         if idx_controllo == len(data) or re.search(r"([0-9]{2}/[0-9]{2}/[0-9]{4})", data[idx_controllo]):
             break
